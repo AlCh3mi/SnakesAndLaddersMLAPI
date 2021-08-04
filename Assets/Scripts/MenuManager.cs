@@ -1,37 +1,129 @@
+using System;
+using System.Collections;
 using MLAPI;
+using MLAPI.SceneManagement;
+using MLAPI.Transports.UNET;
+using TMPro;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject multiplayerMenu;
+    [SerializeField] private GameObject mainMenu;
+    [SerializeField] private GameObject joinGameMenu;
+    [SerializeField] private GameObject lobby;
+    [SerializeField] private TMP_InputField ipInputField;
+    [SerializeField] private TMP_InputField playerNameInputField;
+
+    private bool isConnecting = false;
     
+    private MenuState menuState = MenuState.MainMenu;
     void Start()
     {
-        multiplayerMenu.SetActive(true);
+        SwitchMenu(menuState);
+        playerNameInputField.text = PlayerPrefs.GetString("PlayerName");
     }
 
-    private void Update()
+    private void SwitchMenu(MenuState newState)
     {
-        if (!NetworkManager.Singleton.IsHost || !NetworkManager.Singleton.IsClient) return;
-        
-        if (Input.GetKeyDown(KeyCode.Escape))
+        switch (newState)
         {
-            ToggleMenu();
+            case MenuState.MainMenu:
+                mainMenu.SetActive(true);
+                joinGameMenu.SetActive(false);
+                lobby.SetActive(false);
+                break;
+            case MenuState.JoinGame:
+                mainMenu.SetActive(false);
+                joinGameMenu.SetActive(true);
+                lobby.SetActive(false);
+                break;
+            case MenuState.Lobby:
+                mainMenu.SetActive(false);
+                joinGameMenu.SetActive(false);
+                lobby.SetActive(true);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, "Invalid Menu State.");
         }
     }
-    
-    private void ToggleMenu() => multiplayerMenu.SetActive(!multiplayerMenu.gameObject.activeSelf);
-    private void ToggleMenu(bool active) => multiplayerMenu.SetActive(active);
+
+    public void BackToMainMenu()
+    {
+        if(NetworkManager.Singleton.IsHost)
+            NetworkManager.Singleton.StopHost();
+        else
+            NetworkManager.Singleton.StopClient();
+        
+        SwitchMenu(MenuState.MainMenu);
+    }
+
+    public void LeaveButton()
+    {
+        if (NetworkManager.Singleton.IsHost)
+        {
+            NetworkManager.Singleton.StopHost();
+            
+        }
+        else if (NetworkManager.Singleton.IsClient)
+        {
+            NetworkManager.Singleton.StopClient();
+        }
+        SwitchMenu(MenuState.MainMenu);
+    }
 
     public void HostGame()
     {
-        NetworkManager.Singleton.StartHost();
-        ToggleMenu(false);
+        PlayerPrefs.SetString("PlayerName", playerNameInputField.text);
+        if(NetworkManager.Singleton.StartHost().Success)
+            SwitchMenu(MenuState.Lobby);
     }
 
-    public void JoinAsClient()
+    public void StartGame()
     {
-        NetworkManager.Singleton.StartClient();
-        ToggleMenu(false);
+        NetworkSceneManager.SwitchScene("Game");
+    }
+
+    public void JoinButtonMainMenu()
+    {
+        PlayerPrefs.SetString("PlayerName", playerNameInputField.text);
+        SwitchMenu(MenuState.JoinGame);
+    }
+
+    public void JoinGameAsClient()
+    {
+        if(ipInputField.text == "")
+            NetworkManager.Singleton.StartClient();
+        else
+        {
+            NetworkManager.Singleton.gameObject.GetComponent<UNetTransport>().ConnectAddress = ipInputField.text;
+            NetworkManager.Singleton.StartClient();
+        }
+        if(!isConnecting)
+            StartCoroutine(WaitingToConnect());
+    }
+
+    IEnumerator WaitingToConnect()
+    {
+        isConnecting = true;
+        var timeOutTimer = 10f;
+        while (!NetworkManager.Singleton.IsConnectedClient)
+        {
+            timeOutTimer -= Time.deltaTime;
+            if (timeOutTimer <= 0)
+                break;
+            yield return null;
+        }
+        
+        if (NetworkManager.Singleton.IsConnectedClient)
+        {
+            SwitchMenu(MenuState.Lobby);
+        }
+        else
+        {
+            Debug.Log("Unable To Connect.");
+            NetworkManager.Singleton.StopClient();
+        }
+
+        isConnecting = false;
     }
 }
