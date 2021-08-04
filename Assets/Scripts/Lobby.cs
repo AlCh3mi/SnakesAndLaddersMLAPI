@@ -19,7 +19,6 @@ public class Lobby : NetworkBehaviour
 
     public override void NetworkStart()
     {
-        Debug.Log("Network Start Initiated on Lobby");
         if(IsHost)
         {
             startButton.gameObject.SetActive(true);
@@ -31,6 +30,8 @@ public class Lobby : NetworkBehaviour
             {
                 HandleClientConnected(networkClient.ClientId);
             }
+            
+            ToggleReadyServerRpc(PlayerPrefs.GetString("PlayerName"));
         }
         
         lobbyPlayerStates.OnListChanged += HandleLobbyPlayerStateChanged;
@@ -73,19 +74,16 @@ public class Lobby : NetworkBehaviour
     
     private void HandleLobbyPlayerStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
-        Debug.Log($"Lobby Player States Count : {lobbyPlayerStates.Count}");
         
         for (int i = 0; i < playerLobbyCards.Length; i++)
         {
             if (lobbyPlayerStates.Count > i)
             {
-                Debug.Log($"Activating PlayerCard {i}");
                 playerLobbyCards[i].UpdateDisplay(lobbyPlayerStates[i]);
             }
             else
             {
                 playerLobbyCards[i].DisableDisplay();
-                Debug.Log($"Disabling PlayerCard {i}");
             }
         }
 
