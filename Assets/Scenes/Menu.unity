@@ -295,7 +295,23 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1939362307481843190, guid: a0409604585e49342a96437c24d61ccf, type: 3}
+      propertyPath: NetworkConfig.PlayerPrefabHash
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939362307481843190, guid: a0409604585e49342a96437c24d61ccf, type: 3}
+      propertyPath: NetworkConfig.PlayerPrefabHash.Value
+      value: 1897319656204293034
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939362307481843190, guid: a0409604585e49342a96437c24d61ccf, type: 3}
       propertyPath: NetworkConfig.NetworkPrefabs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939362307481843190, guid: a0409604585e49342a96437c24d61ccf, type: 3}
+      propertyPath: NetworkConfig.NetworkPrefabs.Array.data[0].Prefab
+      value: 
+      objectReference: {fileID: 3106424227908733802, guid: 196892e32790fe44c910cf4f4d0f11ab, type: 3}
+    - target: {fileID: 1939362307481843190, guid: a0409604585e49342a96437c24d61ccf, type: 3}
+      propertyPath: NetworkConfig.NetworkPrefabs.Array.data[0].PlayerPrefab
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1939362307481843191, guid: a0409604585e49342a96437c24d61ccf, type: 3}

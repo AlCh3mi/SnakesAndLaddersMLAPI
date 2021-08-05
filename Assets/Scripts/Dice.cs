@@ -27,7 +27,7 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
 
     private void HandleDiceBeingRolled(int previousvalue, int newvalue)
     {
-        //Show an animation before displaying the value.
+        //todo Show an animation before displaying the value.
         diceText.text = newvalue.ToString();
     }
 
@@ -47,15 +47,16 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
         else if (IsClient)
         {
             //Submit Roll Dice Request To server.
-            RequestDiceRollServerRpc((int)NetworkManager.Singleton.LocalClientId);
+            RequestDiceRollServerRpc();
             Debug.Log("Dice Roll Request Sent to Server");
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void RequestDiceRollServerRpc(int playerId)
+    public void RequestDiceRollServerRpc(ServerRpcParams serverRpcParams = default)
     {
         //if its the players turn, allow the diceroll, else reject.
-        RollDice();
+        //if(serverRpcParams.Receive.SenderClientId == CurrentPlayersTurn)
+            RollDice();
     }
 }

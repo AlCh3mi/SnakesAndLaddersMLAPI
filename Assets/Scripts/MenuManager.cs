@@ -60,14 +60,10 @@ public class MenuManager : MonoBehaviour
     public void LeaveButton()
     {
         if (NetworkManager.Singleton.IsHost)
-        {
             NetworkManager.Singleton.StopHost();
-            
-        }
         else if (NetworkManager.Singleton.IsClient)
-        {
             NetworkManager.Singleton.StopClient();
-        }
+        
         SwitchMenu(MenuState.MainMenu);
     }
 
@@ -123,7 +119,6 @@ public class MenuManager : MonoBehaviour
             Debug.Log("Unable To Connect.");
             NetworkManager.Singleton.StopClient();
         }
-
         isConnecting = false;
     }
 }

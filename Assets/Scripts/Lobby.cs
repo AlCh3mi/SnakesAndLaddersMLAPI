@@ -1,4 +1,3 @@
-using System;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
@@ -50,6 +49,13 @@ public class Lobby : NetworkBehaviour
     private void HandleClientConnected(ulong clientId)
     {
         Debug.Log("Player connected : assigned clientId "+clientId);
+
+        if (lobbyPlayerStates.Count > 4)
+        {
+            Debug.Log("Kicked from Server : Server Full");
+            NetworkManager.Singleton.DisconnectClient(clientId);
+            return;
+        } 
         
         lobbyPlayerStates.Add(new LobbyPlayerState(
             clientId,
@@ -74,7 +80,6 @@ public class Lobby : NetworkBehaviour
     
     private void HandleLobbyPlayerStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
-        
         for (int i = 0; i < playerLobbyCards.Length; i++)
         {
             if (lobbyPlayerStates.Count > i)

@@ -1,32 +1,23 @@
-using System;
-using MLAPI;
-using MLAPI.NetworkVariable;
+using MLAPI.Serialization;
 using UnityEngine;
 
-public class Player : NetworkBehaviour
+public class Player : MonoBehaviour, INetworkSerializable
 {
-    [HideInInspector] public NetworkVariableColor Colour = new NetworkVariableColor(new NetworkVariableSettings());
-    [SerializeField] private SpriteRenderer _spriteRenderer;
-    private void Start()
+    private string PlayerName;
+    private ulong ClientId;
+    public int CurrentPosition;
+    
+    public void Setup(string playerName, ulong clientId)
     {
-        Colour.OnValueChanged += HandleColourChanged;
+        PlayerName = playerName;
+        ClientId = clientId;
+        CurrentPosition = 0;
     }
 
-    private void HandleColourChanged(Color previousvalue, Color newvalue)
+    public void NetworkSerialize(NetworkSerializer serializer)
     {
-        _spriteRenderer.color = newvalue;
-    }
-
-    private void OnDestroy()
-    {
-        if (NetworkManager.Singleton)
-        {
-            Colour.OnValueChanged -= HandleColourChanged;
-        }
-    }
-
-    public void Setup(Color colour)
-    {
-        Colour.Value = colour;
+        serializer.Serialize(ref PlayerName);
+        serializer.Serialize(ref ClientId);
+        serializer.Serialize(ref CurrentPosition);
     }
 }

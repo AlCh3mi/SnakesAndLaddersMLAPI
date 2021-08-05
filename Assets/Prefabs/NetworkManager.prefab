@@ -54,9 +54,7 @@ MonoBehaviour:
     - Menu
     - Game
     AllowRuntimeSceneChanges: 0
-    NetworkPrefabs:
-    - Prefab: {fileID: 3106424227908733802, guid: 196892e32790fe44c910cf4f4d0f11ab, type: 3}
-      PlayerPrefab: 0
+    NetworkPrefabs: []
     PlayerPrefabHash:
       id: 0
     CreatePlayerPrefab: 0
@@ -98,7 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MessageBufferSize: 5120
-  MaxConnections: 100
+  MaxConnections: 4
   MaxSentMessageQueueSize: 128
   ConnectAddress: 127.0.0.1
   ConnectPort: 7777

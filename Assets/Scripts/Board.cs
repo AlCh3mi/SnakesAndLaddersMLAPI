@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class Board : MonoBehaviour
 {
     [SerializeField] private GameObject blockPrefab;
+    public GameObject startPosition;
     [SerializeField] private Vector2Int boardDimensions;
-    [SerializeField] private Color[] blockColours;
-
+    
     public Dictionary<int, Block> positions;
 
     private void Start()
     {
+        positions = new Dictionary<int, Block> {{0, startPosition.GetComponent<Block>()}};
         PopulateBoardPositionList();
     }
 
@@ -22,8 +22,18 @@ public class Board : MonoBehaviour
         
         foreach (var block in GetComponentsInChildren<Block>())
         {
+            if(block.Id == 0)
+                continue;
             positions.Add(block.Id, block);
         }
+    }
+
+    public Vector2 NextPosition(int currentPosition)
+    {
+        if (currentPosition == 100) 
+            return positions[currentPosition].transform.position;
+        
+        return positions[currentPosition + 1].transform.position;
     }
     
     [ContextMenu("Clear Board")]
@@ -31,6 +41,8 @@ public class Board : MonoBehaviour
     {
         foreach (var block in GetComponentsInChildren<Block>())
         {
+            if(block.Id == 0)
+                continue;
             DestroyImmediate(block.gameObject);
         }
     }
@@ -51,7 +63,7 @@ public class Board : MonoBehaviour
                 else
                     prefab.transform.position = new Vector3(boardDimensions.x - x - 1, y);
                 
-                prefab.GetComponent<Block>().Setup(blockId, blockColours[Random.Range(0, blockColours.Length)]);
+                prefab.GetComponent<Block>().Setup(blockId);
                 prefab.name = blockId.ToString();
             }
         }
