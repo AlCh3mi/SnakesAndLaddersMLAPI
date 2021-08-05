@@ -55,7 +55,7 @@ public class PlayerHandler : NetworkBehaviour
         Debug.Log("Client Connected: " +clientId);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
     public void MovePieceServerRpc(ulong clientId)
     {
         var playerPiece = Players[clientId];

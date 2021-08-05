@@ -3497,9 +3497,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameSequenceHandler: {fileID: 1248255383}
+  playerHandler: {fileID: 994694051}
+  diceText: {fileID: 876969108}
   LastRoll:
     m_InternalValue: 0
-  diceText: {fileID: 876969108}
 --- !u!114 &813580717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5037,6 +5038,8 @@ MonoBehaviour:
   GUI: {fileID: 1693212779}
   playerHandler: {fileID: 994694051}
   dice: {fileID: 813580716}
+  currentPlayersTurn:
+    m_InternalValue: 0
 --- !u!114 &1248255384
 MonoBehaviour:
   m_ObjectHideFlags: 0

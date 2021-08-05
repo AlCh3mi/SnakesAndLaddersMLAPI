@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
@@ -9,6 +11,7 @@ using Random = UnityEngine.Random;
 public class Dice : NetworkBehaviour, IPointerClickHandler
 {
     [SerializeField] private GameSequenceHandler gameSequenceHandler;
+    [SerializeField] private PlayerHandler playerHandler;
     [SerializeField] private TMP_Text diceText;
     
     public NetworkVariableInt LastRoll = new NetworkVariableInt(
@@ -32,10 +35,21 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
         diceText.text = newvalue.ToString();
     }
 
-    private void RollDice()
+    private void RollDice(ulong clientId)
     {
         LastRoll.Value = Random.Range(1, 7);
         LastRoll.SetDirty(true);
+        StartCoroutine(DelayedMove(clientId, () => gameSequenceHandler.NextPlayersTurn()));
+    }
+
+    IEnumerator DelayedMove(ulong clientId, Action onComplete = default)
+    {
+        for (int i = 0; i < LastRoll.Value; i++)
+        {
+            playerHandler.MovePieceServerRpc(clientId);
+            yield return new WaitForSeconds(1f);
+        }
+        onComplete?.Invoke();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -50,11 +64,9 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     [ServerRpc(RequireOwnership = false)]
     public void RequestDiceRollServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        //if its the players turn, allow the diceroll, else reject.
-        if(serverRpcParams.Receive.SenderClientId == gameSequenceHandler.CurrentPlayerTurn())
+        if(serverRpcParams.Receive.SenderClientId == (ulong)gameSequenceHandler.currentPlayersTurn.Value)
         {
-            RollDice();
-            gameSequenceHandler.NextPlayersTurn();
+            RollDice(serverRpcParams.Receive.SenderClientId);
         }
     }
 }

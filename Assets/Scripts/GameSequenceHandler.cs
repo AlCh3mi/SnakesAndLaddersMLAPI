@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using MLAPI;
 using MLAPI.Messaging;
@@ -23,7 +21,6 @@ public class GameSequenceHandler : NetworkBehaviour
         {
             playerTurn.Enqueue(networkClient.ClientId);
         }
-
         currentPlayersTurn.OnValueChanged += HandlePlayerTurnChanged;
     }
 
@@ -32,16 +29,13 @@ public class GameSequenceHandler : NetworkBehaviour
         //Update UI as to who's turn it currentlyIs 
     }
 
-    public ulong CurrentPlayerTurn()
-    {
-        return playerTurn.Peek();
-    }
-
     public ulong NextPlayersTurn()
     {
         playerTurn.Enqueue(playerTurn.Dequeue());
-        ItsYourTurnClientRpc(playerTurn.Peek());
-        return playerTurn.Peek();
+        var nextPlayer = playerTurn.Peek();
+        currentPlayersTurn.Value = (int)nextPlayer;
+        ItsYourTurnClientRpc(nextPlayer);
+        return nextPlayer;
     }
 
     [ClientRpc(Delivery = RpcDelivery.Reliable)]
@@ -49,21 +43,8 @@ public class GameSequenceHandler : NetworkBehaviour
     {
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
-            StartCoroutine(WaitingForPlayerAction());
-        }
-    }
-
-    IEnumerator WaitingForPlayerAction()
-    {
-        var turnDuration = 30f;
-        
-        var message = Instantiate(onScreenMessagePrefab, GUI.transform);
-        message.GetComponent<OnScreenMessage>().Display("Its your turn to play!", "Roll the dice", 3f);
-
-        while (turnDuration >= 0f)
-        {
-            turnDuration -= Time.deltaTime;
-            yield return null;
+            var message = Instantiate(onScreenMessagePrefab, GUI.transform);
+            message.GetComponent<OnScreenMessage>().Display("Its your turn to play!", "Roll the dice", 3f);
         }
     }
 

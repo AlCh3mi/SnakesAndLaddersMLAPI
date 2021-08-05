@@ -320,6 +320,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentPosition: 0
+  models:
+  - {fileID: 5311950417440392952}
+  - {fileID: 8975880229189731957}
+  - {fileID: 7472831175152706419}
+  - {fileID: 3020076628904290733}
+  - {fileID: 2369449235165825759}
+  - {fileID: 8371341067806536896}
+  - {fileID: 4960436510956899419}
+  - {fileID: 4176952146048445918}
 --- !u!1 &3128768105731020390
 GameObject:
   m_ObjectHideFlags: 0
