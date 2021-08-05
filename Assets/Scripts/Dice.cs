@@ -8,14 +8,15 @@ using Random = UnityEngine.Random;
 
 public class Dice : NetworkBehaviour, IPointerClickHandler
 {
+    [SerializeField] private GameSequenceHandler gameSequenceHandler;
+    [SerializeField] private TMP_Text diceText;
+    
     public NetworkVariableInt LastRoll = new NetworkVariableInt(
         new NetworkVariableSettings { 
             ReadPermission = NetworkVariablePermission.Everyone, 
             WritePermission = NetworkVariablePermission.ServerOnly
         }
     );
-
-    [SerializeField] private TMP_Text diceText;
 
     public override void NetworkStart()
     {
@@ -39,14 +40,8 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (IsHost)
+        if (IsClient)
         {
-            RollDice();
-            Debug.Log("Dice Roll called as Host");
-        }
-        else if (IsClient)
-        {
-            //Submit Roll Dice Request To server.
             RequestDiceRollServerRpc();
             Debug.Log("Dice Roll Request Sent to Server");
         }
@@ -56,7 +51,10 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     public void RequestDiceRollServerRpc(ServerRpcParams serverRpcParams = default)
     {
         //if its the players turn, allow the diceroll, else reject.
-        //if(serverRpcParams.Receive.SenderClientId == CurrentPlayersTurn)
+        if(serverRpcParams.Receive.SenderClientId == gameSequenceHandler.CurrentPlayerTurn())
+        {
             RollDice();
+            gameSequenceHandler.NextPlayersTurn();
+        }
     }
 }
