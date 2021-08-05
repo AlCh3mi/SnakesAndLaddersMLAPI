@@ -31,6 +31,16 @@ public class PlayerHandler : NetworkBehaviour
         }
     }
 
+    public void MovePlayerTo(ulong clientId, int Block)
+    {
+        if(Block != -1)
+        {
+            var playerPiece = Players[clientId];
+            playerPiece.transform.DOMove(board.positions[Block].transform.position, 2f);
+            playerPiece.CurrentPosition = Block;
+        }
+    }
+
     private void OnDestroy()
     {
         if (NetworkManager.Singleton)

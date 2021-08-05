@@ -36,6 +36,13 @@ public class Board : MonoBehaviour
         return positions[currentPosition + 1].transform.position;
     }
     
+    public int MoveToIfLandedOn(int currentPosition)
+    {
+        if (currentPosition == -1)
+            return -1;
+        return positions[currentPosition].IfLandedOnMoveTo;
+    }
+    
     [ContextMenu("Clear Board")]
     public void ClearBoard()
     {
@@ -69,4 +76,5 @@ public class Board : MonoBehaviour
         }
     }
 #endif
+    
 }

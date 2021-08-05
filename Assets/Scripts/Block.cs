@@ -7,7 +7,7 @@ public class Block : MonoBehaviour
     public int Id;
     [SerializeField] private TMP_Text numberText;
     
-    public UnityEvent<int> IfLandedOnMoveTo;
+    public int IfLandedOnMoveTo = -1;
     
     public void Setup(int Id)
     {

@@ -1,25 +1,36 @@
 using System;
+using MLAPI;
+using MLAPI.NetworkVariable;
 using MLAPI.Serialization;
 using UnityEngine;
 
-public class Player : MonoBehaviour, INetworkSerializable
+public class Player : NetworkBehaviour, INetworkSerializable
 {
     private string PlayerName;
     private ulong ClientId;
     public int CurrentPosition;
-
+    
     public GameObject[] models;
 
-    private void Start()
+    private NetworkVariableInt model = new NetworkVariableInt();
+
+    public override void NetworkStart()
     {
-        var randomModel = UnityEngine.Random.Range(0, models.Length);
-        for (int i = 0; i < models.Length; i++)
+        if (IsHost)
         {
-            if(i == randomModel)
-                models[i].SetActive(true);
-            else
+            model.Value = UnityEngine.Random.Range(0, models.Length);
+        }
+
+        if (IsClient)
+        {
+            for (int i = 0; i < models.Length; i++)
             {
-                models[i].SetActive(false);
+                if(i == model.Value)
+                    models[i].SetActive(true);
+                else
+                {
+                    models[i].SetActive(false);
+                }
             }
         }
     }

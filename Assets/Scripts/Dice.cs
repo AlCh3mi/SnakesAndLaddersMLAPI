@@ -12,7 +12,15 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
 {
     [SerializeField] private GameSequenceHandler gameSequenceHandler;
     [SerializeField] private PlayerHandler playerHandler;
+    [SerializeField] private Board board;
     [SerializeField] private TMP_Text diceText;
+
+
+    private NetworkVariableBool isMoving = new NetworkVariableBool(new NetworkVariableSettings
+    {
+        ReadPermission = NetworkVariablePermission.Everyone,
+        WritePermission = NetworkVariablePermission.Everyone
+    });
     
     public NetworkVariableInt LastRoll = new NetworkVariableInt(
         new NetworkVariableSettings { 
@@ -39,11 +47,17 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     {
         LastRoll.Value = Random.Range(1, 7);
         LastRoll.SetDirty(true);
-        StartCoroutine(DelayedMove(clientId, () => gameSequenceHandler.NextPlayersTurn()));
+        StartCoroutine(DelayedMove(clientId, () =>
+        {
+            gameSequenceHandler.NextPlayersTurn();
+            isMoving.Value = false;
+            playerHandler.MovePlayerTo(clientId, board.MoveToIfLandedOn(playerHandler.Players[clientId].CurrentPosition));
+        }));
     }
 
     IEnumerator DelayedMove(ulong clientId, Action onComplete = default)
     {
+        isMoving.Value = true;
         for (int i = 0; i < LastRoll.Value; i++)
         {
             playerHandler.MovePieceServerRpc(clientId);
@@ -54,7 +68,7 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (IsClient)
+        if (IsClient && !isMoving.Value)
         {
             RequestDiceRollServerRpc();
             Debug.Log("Dice Roll Request Sent to Server");

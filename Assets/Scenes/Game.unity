@@ -974,6 +974,10 @@ PrefabInstance:
       propertyPath: Id
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
       value: 4
@@ -3498,6 +3502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameSequenceHandler: {fileID: 1248255383}
   playerHandler: {fileID: 994694051}
+  board: {fileID: 784740260}
   diceText: {fileID: 876969108}
   LastRoll:
     m_InternalValue: 0
@@ -4704,6 +4709,10 @@ PrefabInstance:
       propertyPath: Id
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
       value: 6
@@ -4775,9 +4784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 0
   numberText: {fileID: 0}
-  IfLandedOnMoveTo:
-    m_PersistentCalls:
-      m_Calls: []
+  IfLandedOnMoveTo: -1
 --- !u!212 &1214196940
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4979,6 +4986,10 @@ PrefabInstance:
     - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: Id
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
@@ -5676,6 +5687,10 @@ PrefabInstance:
     - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: Id
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
@@ -6764,6 +6779,10 @@ PrefabInstance:
       propertyPath: Id
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
       value: 5
@@ -6937,6 +6956,10 @@ PrefabInstance:
     - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: Id
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6015425983515331114, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
+      propertyPath: IfLandedOnMoveTo
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6015425983515331119, guid: c4f30ba9c2adc6b4caa9b68ae7310147, type: 3}
       propertyPath: m_Name
