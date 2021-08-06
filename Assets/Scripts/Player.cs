@@ -1,7 +1,7 @@
-using System;
 using MLAPI;
 using MLAPI.NetworkVariable;
 using MLAPI.Serialization;
+using TMPro;
 using UnityEngine;
 
 public class Player : NetworkBehaviour, INetworkSerializable
@@ -9,6 +9,8 @@ public class Player : NetworkBehaviour, INetworkSerializable
     private string PlayerName;
     private ulong ClientId;
     public int CurrentPosition;
+
+    //[SerializeField] private TMP_Text nameText;
     
     public GameObject[] models;
 
@@ -18,7 +20,7 @@ public class Player : NetworkBehaviour, INetworkSerializable
     {
         if (IsHost)
         {
-            model.Value = UnityEngine.Random.Range(0, models.Length);
+            model.Value = Random.Range(0, models.Length);
         }
 
         if (IsClient)
@@ -38,6 +40,7 @@ public class Player : NetworkBehaviour, INetworkSerializable
     public void Setup(string playerName, ulong clientId)
     {
         PlayerName = playerName;
+        //nameText.text = PlayerName;
         ClientId = clientId;
         CurrentPosition = 0;
     }

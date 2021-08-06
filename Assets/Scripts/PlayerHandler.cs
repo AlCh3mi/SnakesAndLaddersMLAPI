@@ -4,12 +4,12 @@ using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
 using MLAPI.NetworkVariable.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerHandler : NetworkBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Board board;
+    [SerializeField] private GameSequenceHandler gameSequenceHandler;
 
     public NetworkDictionary<ulong, Player> Players = new NetworkDictionary<ulong, Player>(new NetworkVariableSettings
     {
@@ -30,26 +30,15 @@ public class PlayerHandler : NetworkBehaviour
             SpawnPlayerServerRpc(PlayerPrefs.GetString("PlayerName"), NetworkManager.Singleton.LocalClientId);
         }
     }
-
-    public void MovePlayerTo(ulong clientId, int Block)
-    {
-        if(Block != -1)
-        {
-            var playerPiece = Players[clientId];
-            playerPiece.transform.DOMove(board.positions[Block].transform.position, 2f);
-            playerPiece.CurrentPosition = Block;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (NetworkManager.Singleton)
-        {
-            NetworkManager.OnClientConnectedCallback -= HandleClientConnected;
-            NetworkManager.OnClientDisconnectCallback -= HandleClientDisconnected;
-        }
-    }
     
+    private void HandleClientConnected(ulong clientId) => Debug.Log("Client Connected: " +clientId);
+    
+    private void HandleClientDisconnected(ulong clientId)
+    {
+        Debug.Log("Client Disconnected: " +clientId);
+        Players.Remove(clientId);
+    }
+        
     [ServerRpc(RequireOwnership = false)]
     private void SpawnPlayerServerRpc(string playerName, ulong clientId)
     {
@@ -60,30 +49,43 @@ public class PlayerHandler : NetworkBehaviour
         Players.Add(clientId, instance.GetComponent<Player>());
     }
     
-    private void HandleClientConnected(ulong clientId)
-    {
-        Debug.Log("Client Connected: " +clientId);
-    }
-
     [ServerRpc(RequireOwnership = false, Delivery = RpcDelivery.Reliable)]
     public void MovePieceServerRpc(ulong clientId)
     {
         var playerPiece = Players[clientId];
-        
         var nextPosition = board.NextPosition(playerPiece.CurrentPosition);
+        
         if (playerPiece.CurrentPosition < 100)
+        {
             playerPiece.CurrentPosition++;
-         
-        playerPiece.transform.DOMove(nextPosition, 1f);
+            playerPiece.transform.DOMove(nextPosition, 1f);
+        }
+        else
+        {
+            gameSequenceHandler.WinAchievedClientRpc(clientId);
+        }
+    }
+    
+    public void MovePlayerTo(ulong clientId, int Block)
+    {
+        if(Block != -1)
+        {
+            var playerPiece = Players[clientId];
+            playerPiece.transform.DOMove(board.positions[Block].transform.position, 2f);
+            playerPiece.CurrentPosition = Block;
+            if (playerPiece.CurrentPosition >= 100)
+            {
+                gameSequenceHandler.WinAchievedClientRpc(clientId);
+            }
+        }
     }
 
-    private void HandleClientDisconnected(ulong clientId)
+    private void OnDestroy()
     {
-        if (clientId == NetworkManager.Singleton.LocalClientId)
+        if (NetworkManager.Singleton)
         {
-            SceneManager.LoadScene("Scenes/Menu");
+            NetworkManager.OnClientConnectedCallback -= HandleClientConnected;
+            NetworkManager.OnClientDisconnectCallback -= HandleClientDisconnected;
         }
-        Debug.Log("Client Disconnected: " +clientId);
-        Players.Remove(clientId);
     }
 }

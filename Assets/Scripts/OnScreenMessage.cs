@@ -8,6 +8,7 @@ public class OnScreenMessage : MonoBehaviour
     [SerializeField] private TMP_Text subText;
 
     private bool isInitialized = false;
+    private bool fadeAway = true;
 
     private CanvasGroup canvasGroup;
 
@@ -18,16 +19,17 @@ public class OnScreenMessage : MonoBehaviour
 
     private void Update()
     {
-        if(isInitialized)
+        if(isInitialized && fadeAway)
             canvasGroup.alpha -= Time.deltaTime / Duration;
     }
 
-    public void Display(string headerText, string subText = "", float displayDuration = 5f)
+    public void Display(string headerText, string subText = "", float displayDuration = 5f, bool fadeAway = true)
     {
         this.headerText.text = headerText;
         this.subText.text = subText;
+        this.fadeAway = fadeAway;
         Duration = displayDuration;
         isInitialized = true;
-        Destroy(gameObject, displayDuration);
+        Destroy(gameObject, displayDuration > 0 ? displayDuration : default);
     }
 }

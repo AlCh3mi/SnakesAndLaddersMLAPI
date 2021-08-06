@@ -3,7 +3,6 @@ using System.Collections;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
@@ -13,10 +12,8 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     [SerializeField] private GameSequenceHandler gameSequenceHandler;
     [SerializeField] private PlayerHandler playerHandler;
     [SerializeField] private Board board;
-    [SerializeField] private TMP_Text diceText;
     [SerializeField] private Sprite[] diceFaces;
     [SerializeField] private SpriteRenderer spriteRenderer;
-    
 
     private NetworkVariableBool isMoving = new NetworkVariableBool(new NetworkVariableSettings
     {
@@ -31,18 +28,9 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
         }
     );
 
-    public override void NetworkStart()
-    {
-        LastRoll.OnValueChanged += HandleDiceBeingRolled;
-        
-        // if(IsClient)
-        //     UpdateDiceFace();
-    }
+    public override void NetworkStart() => LastRoll.OnValueChanged += HandleDiceBeingRolled;
 
-    private void UpdateDiceFace()
-    {
-        spriteRenderer.sprite = diceFaces[LastRoll.Value - 1];
-    }
+    public void OnDestroy() => LastRoll.OnValueChanged -= HandleDiceBeingRolled;
 
     private void HandleDiceBeingRolled(int previousvalue, int newvalue)
     {
@@ -50,15 +38,21 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
             UpdateDiceFace();
     }
 
+    private void UpdateDiceFace() => spriteRenderer.sprite = diceFaces[LastRoll.Value - 1];
+    
     private void RollDice(ulong clientId)
     {
         LastRoll.Value = Random.Range(1, 7);
         LastRoll.SetDirty(true);
         StartCoroutine(DelayedMove(clientId, () =>
         {
-            gameSequenceHandler.NextPlayersTurn();
             isMoving.Value = false;
-            playerHandler.MovePlayerTo(clientId, board.MoveToIfLandedOn(playerHandler.Players[clientId].CurrentPosition));
+            if(!gameSequenceHandler.gameOver.Value)
+            {
+                gameSequenceHandler.NextPlayersTurn();
+                playerHandler.MovePlayerTo(clientId,
+                    board.MoveToIfLandedOn(playerHandler.Players[clientId].CurrentPosition));
+            }
         }));
     }
 
@@ -75,16 +69,18 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if(gameSequenceHandler.gameOver.Value) return;
+        
         if (IsClient && !isMoving.Value)
         {
             RequestDiceRollServerRpc();
-            Debug.Log("Dice Roll Request Sent to Server");
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void RequestDiceRollServerRpc(ServerRpcParams serverRpcParams = default)
     {
+        
         if(serverRpcParams.Receive.SenderClientId == (ulong)gameSequenceHandler.currentPlayersTurn.Value)
         {
             RollDice(serverRpcParams.Receive.SenderClientId);
