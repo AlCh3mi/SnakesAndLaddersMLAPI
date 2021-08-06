@@ -51,6 +51,7 @@ public class GameSequenceHandler : NetworkBehaviour
     [ClientRpc(Delivery = RpcDelivery.Reliable)]
     public void WinAchievedClientRpc(ulong clientId)
     {
+        gameOver.Value = true;
         winParticles.gameObject.SetActive(true);
         
         if (clientId == NetworkManager.Singleton.LocalClientId)

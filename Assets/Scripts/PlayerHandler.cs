@@ -57,10 +57,10 @@ public class PlayerHandler : NetworkBehaviour
         
         if (playerPiece.CurrentPosition < 100)
         {
-            playerPiece.CurrentPosition++;
             playerPiece.transform.DOMove(nextPosition, 1f);
+            playerPiece.CurrentPosition++;
         }
-        else
+        if(playerPiece.CurrentPosition >= 100)
         {
             gameSequenceHandler.WinAchievedClientRpc(clientId);
         }
