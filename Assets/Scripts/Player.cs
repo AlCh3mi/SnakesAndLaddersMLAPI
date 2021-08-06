@@ -1,7 +1,6 @@
 using MLAPI;
 using MLAPI.NetworkVariable;
 using MLAPI.Serialization;
-using TMPro;
 using UnityEngine;
 
 public class Player : NetworkBehaviour, INetworkSerializable
@@ -10,8 +9,6 @@ public class Player : NetworkBehaviour, INetworkSerializable
     private ulong ClientId;
     public int CurrentPosition;
 
-    //[SerializeField] private TMP_Text nameText;
-    
     public GameObject[] models;
 
     private NetworkVariableInt model = new NetworkVariableInt();
@@ -40,7 +37,6 @@ public class Player : NetworkBehaviour, INetworkSerializable
     public void Setup(string playerName, ulong clientId)
     {
         PlayerName = playerName;
-        //nameText.text = PlayerName;
         ClientId = clientId;
         CurrentPosition = 0;
     }
