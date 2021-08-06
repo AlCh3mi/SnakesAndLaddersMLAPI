@@ -14,7 +14,9 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     [SerializeField] private PlayerHandler playerHandler;
     [SerializeField] private Board board;
     [SerializeField] private TMP_Text diceText;
-
+    [SerializeField] private Sprite[] diceFaces;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    
 
     private NetworkVariableBool isMoving = new NetworkVariableBool(new NetworkVariableSettings
     {
@@ -33,14 +35,19 @@ public class Dice : NetworkBehaviour, IPointerClickHandler
     {
         LastRoll.OnValueChanged += HandleDiceBeingRolled;
         
-        if(IsClient)
-            diceText.text = LastRoll.Value.ToString();
+        // if(IsClient)
+        //     UpdateDiceFace();
+    }
+
+    private void UpdateDiceFace()
+    {
+        spriteRenderer.sprite = diceFaces[LastRoll.Value - 1];
     }
 
     private void HandleDiceBeingRolled(int previousvalue, int newvalue)
     {
-        //todo Show an animation before displaying the value.
-        diceText.text = newvalue.ToString();
+        if(newvalue != 0)
+            UpdateDiceFace();
     }
 
     private void RollDice(ulong clientId)

@@ -86,10 +86,4 @@ public class PlayerHandler : NetworkBehaviour
         Debug.Log("Client Disconnected: " +clientId);
         Players.Remove(clientId);
     }
-
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(10, 70, 50, 30), "Move"))
-            MovePieceServerRpc(NetworkManager.Singleton.LocalClientId);
-    }
 }
